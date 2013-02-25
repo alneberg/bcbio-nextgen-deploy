@@ -77,13 +77,11 @@ def install(env, config_lines, version, tests):
     bcbb_dir = pjoin(home, 'opt/bcbb')
 
     #Bash commands
-    install_and_create_virtualenv ='''
-        ~/opt/mypython/lib/python{python_version}/site-packages/easy_install --prefix=~/opt/mypython pip &&
-        pip install virtualenvwrapper --install-option="--prefix=~/opt/mypython" &&
-        . ~/.bashrc &&
-        {module_unload_python}
+    install_and_create_virtualenv = """
+        curl -s https://raw.github.com/brainsik/virtualenv-burrito/master/virtualenv-burrito.sh | $SHELL
+        source ~/.venvburrito/startup.sh
         mkvirtualenv master
-        '''
+    """
 
     install_code_in_production = """
         . ~/.bashrc &&
@@ -149,14 +147,6 @@ def install(env, config_lines, version, tests):
     if not os.path.exists(python_dir):
         os.makedirs(python_dir)
 
-    #Download easy_install locally, as it is not a standard library
-    log.info("Installing easy_install locally, as it is not an standard library...")
-    setuptools_url = "http://pypi.python.org/packages/{python_version}/s/setuptools/setuptools-0.6c11-py{python_version}.egg"
-    setuptools_url = setuptools_url.format(python_version = env['PYTHON_VERSION'])
-    egg = setuptools_url.split('/')[-1]
-    download_and_install = 'wget ' + setuptools_url + ' && sh ' + egg + ' --install-dir=' + env['PYTHONPATH']
-    Popen(download_and_install, shell=True, executable='/bin/bash', env=env).wait()
-
     #Now we can download pip and keep on going
     log.info("Installing virtualenvwrapper and creating a virtual environment \"master\" for the production pipeline...")
     Popen(install_and_create_virtualenv, shell=True, executable='/bin/bash', env=env).wait()
@@ -216,7 +206,7 @@ def install(env, config_lines, version, tests):
         log.info("Preparing testsuite...")
         os.chdir(pjoin(bcbb_dir, 'nextgen/tests/data/automated'))
         if inHPC:
-            modify_java_memory = '''sed 's/java_memory\: 1g/java_memory\: 6g/' < post_process-sample.yaml > post_process-sample.yaml_'''
+            modify_java_memory = '''sed 's/java_memory\: 3g/java_memory\: 6g/' < post_process-sample.yaml > post_process-sample.yaml_'''
             Popen(modify_java_memory,  shell=True, executable='/bin/bash', env=env).wait()
             shutil.move('post_process-sample.yaml_', 'post_process-sample.yaml')
         # Run the testsuite with reduced test data (if not in Travis-CI)
