@@ -1,6 +1,6 @@
 ## Overview
 
-This is a set of scripts to perform an automatic deployment of the next gen sequencing analysis [pipeline][o1]. You can do it in two ways:
+This is a set of scripts to perform an automatic deployment of the next gen sequencing analysis [pipeline][o1]. You can do it in three ways:
 * Configure and install the pipeline in [UPPMAX][o5] (see detail below)
 * Perform a local installation of the pipeline within a virtual machine.
 * Install the pipeline locally in your machine
